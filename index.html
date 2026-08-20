@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>goautall — завантаження</title>
+    <link rel="icon" type="image/png" href="./logo.png" />
+    <style>
+      /* Palette lifted from the desktop client (frontend/src/style.css). */
+      :root {
+        --bg: #1b1d23;
+        --panel: #23262e;
+        --panel-2: #2b2f39;
+        --line: #363b46;
+        --text: #e6e8ec;
+        --muted: #9aa1ad;
+        --accent: #5b8cff;
+        --ok: #4caf7d;
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .card {
+        width: 100%;
+        max-width: 460px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 32px 28px;
+        text-align: center;
+      }
+      .logo {
+        width: 88px;
+        height: 88px;
+        border-radius: 20px;
+        margin-bottom: 16px;
+      }
+      h1 {
+        margin: 0 0 4px;
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+      }
+      .tagline { margin: 0 0 24px; color: var(--muted); }
+      .primary {
+        display: block;
+        width: 100%;
+        padding: 14px 18px;
+        background: var(--accent);
+        color: #fff;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 600;
+        transition: filter 0.15s ease, transform 0.05s ease;
+      }
+      .primary:hover { filter: brightness(1.08); }
+      .primary:active { transform: translateY(1px); }
+      .primary small {
+        display: block;
+        margin-top: 2px;
+        font-weight: 400;
+        opacity: 0.85;
+        font-size: 12px;
+      }
+      .others {
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+        text-align: left;
+      }
+      .others h2 {
+        margin: 0 0 10px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: var(--muted);
+      }
+      .others a {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        margin-bottom: 8px;
+        background: var(--panel-2);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--text);
+        text-decoration: none;
+        transition: border-color 0.15s ease;
+      }
+      .others a:last-child { margin-bottom: 0; }
+      .others a:hover { border-color: var(--accent); }
+      .others .ext { color: var(--muted); font-size: 12px; }
+      .footer {
+        margin-top: 22px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .footer a { color: var(--accent); text-decoration: none; }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <img class="logo" src="./logo.png" alt="goautall" />
+      <h1>goautall</h1>
+      <p class="tagline">Десктопний клієнт</p>
+
+      <!-- JS fills this in with the visitor's likely platform; if JS is off or
+           detection fails it falls back to the macOS build and every option
+           below stays visible regardless. -->
+      <a id="primary" class="primary" href="#" rel="noopener">
+        Завантажити
+        <small id="primary-note">Оберіть вашу систему нижче</small>
+      </a>
+
+      <section class="others">
+        <h2>Усі завантаження</h2>
+        <a data-os="mac" href="https://github.com/ondnipro/goautall-releases/releases/latest/download/goautall-macos-arm64.zip">
+          <span>macOS (Apple Silicon)</span><span class="ext">.zip</span>
+        </a>
+        <a data-os="win" href="https://github.com/ondnipro/goautall-releases/releases/latest/download/goautall-windows-amd64.exe">
+          <span>Windows (x64)</span><span class="ext">.exe</span>
+        </a>
+      </section>
+
+      <p class="footer">
+        Завжди найновіша версія ·
+        <a href="https://github.com/ondnipro/goautall-releases/releases/latest">усі релізи</a>
+      </p>
+    </main>
+
+    <script>
+      (function () {
+        var links = {
+          mac: document.querySelector('a[data-os="mac"]'),
+          win: document.querySelector('a[data-os="win"]'),
+        };
+        var labels = {
+          mac: "для macOS (Apple Silicon)",
+          win: "для Windows (x64)",
+        };
+
+        // Detect OS only — architecture can't be told reliably from JS, and
+        // every build is still listed below as a manual fallback.
+        var ua = (navigator.userAgent || "").toLowerCase();
+        var plat = (navigator.userAgentData && navigator.userAgentData.platform
+          ? navigator.userAgentData.platform
+          : navigator.platform || "").toLowerCase();
+
+        var os = null;
+        if (plat.indexOf("win") === 0 || ua.indexOf("windows") !== -1) os = "win";
+        else if (plat.indexOf("mac") === 0 || ua.indexOf("mac os") !== -1 || ua.indexOf("macintosh") !== -1) os = "mac";
+
+        var primary = document.getElementById("primary");
+        var note = document.getElementById("primary-note");
+        if (os && links[os]) {
+          primary.href = links[os].href;
+          note.textContent = labels[os];
+        } else {
+          // Unknown platform (e.g. Linux/mobile): send them to the release page.
+          primary.href = "https://github.com/ondnipro/goautall-releases/releases/latest";
+          note.textContent = "Оберіть вашу систему нижче";
+        }
+      })();
+    </script>
+  </body>
+</html>
